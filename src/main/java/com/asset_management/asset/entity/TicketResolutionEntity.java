@@ -23,7 +23,7 @@ public class TicketResolutionEntity {
     private Date resolutionDate;
 
     @Column(name = "resolution_description")
-    private Date resolutionDescription;
+    private String resolutionDescription;
 
 
 }
