@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AssetRegisterRepository extends JpaRepository<AssetRegisterEntity,Integer> {
+    //AssetRegisterEntity findByAssetId(String assetId);
 }
