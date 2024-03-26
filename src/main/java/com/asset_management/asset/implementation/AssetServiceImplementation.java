@@ -2,11 +2,14 @@ package com.asset_management.asset.implementation;
 
 import com.asset_management.asset.dto.RequestAssetRegisterDTO;
 import com.asset_management.asset.dto.RequestSupportTicketDTO;
+import com.asset_management.asset.dto.RequestTicketResolutionDTO;
 import com.asset_management.asset.entity.AssetRegisterEntity;
 import com.asset_management.asset.entity.SupportTicketsEntity;
+import com.asset_management.asset.entity.TicketResolutionEntity;
 import com.asset_management.asset.exception.ApplicationException;
 import com.asset_management.asset.repository.AssetRegisterRepository;
 import com.asset_management.asset.repository.SupportTicketRepository;
+import com.asset_management.asset.repository.TicketResolutionRepository;
 import com.asset_management.asset.service.AssetRegisterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +25,9 @@ public class AssetServiceImplementation implements AssetRegisterService {
 
     @Autowired
     SupportTicketRepository supportTicketRepository;
+
+    @Autowired
+    TicketResolutionRepository ticketResolutionRepository;
 
     @Override
     public AssetRegisterEntity storeAsset(RequestAssetRegisterDTO requestAssetRegisterDTO) {
@@ -50,5 +56,21 @@ public class AssetServiceImplementation implements AssetRegisterService {
         supportTicketsEntity.setAssetId(assetRegisterEntity.get());
 
         return supportTicketRepository.save(supportTicketsEntity);
+    }
+
+    @Override
+    public TicketResolutionEntity storeTicketResolution(RequestTicketResolutionDTO requestTicketResolutionDTO) {
+
+        TicketResolutionEntity ticketResolutionEntity = new TicketResolutionEntity();
+
+        Optional<SupportTicketsEntity> supportTicketsEntity = supportTicketRepository.findById(requestTicketResolutionDTO.getTicketId());
+        if(supportTicketsEntity.isEmpty()){
+            throw new ApplicationException("Record not available!!!",HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST);
+        }
+        ticketResolutionEntity.setTicketId(supportTicketsEntity.get());
+
+        ticketResolutionEntity.setResolutionDate(requestTicketResolutionDTO.getResolutionDate());
+        ticketResolutionEntity.setResolutionDescription(requestTicketResolutionDTO.getResolutionDescription());
+        return ticketResolutionRepository.save(ticketResolutionEntity);
     }
 }
