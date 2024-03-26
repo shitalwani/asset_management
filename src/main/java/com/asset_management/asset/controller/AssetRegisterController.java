@@ -39,6 +39,7 @@ public class AssetRegisterController {
     public ResponseEntity addTicketResolution(@RequestBody RequestTicketResolutionDTO requestTicketResolutionDTO){
         TicketResolutionEntity addResolution = assetRegisterService.storeTicketResolution(requestTicketResolutionDTO);
         return new ResponseEntity(addResolution,HttpStatus.CREATED);
+
     }
 
 }
