@@ -21,8 +21,10 @@ public class SupportTicketsEntity {
     @Column(name = "ticket_raised_by_employee")
     private String ticketRaisedByEmployee;
 
-    @Column(name = "asset_id")
-    private Integer assetId;
+
+    @ManyToOne(targetEntity = AssetRegisterEntity.class)
+    @JoinColumn(name = "assetId", referencedColumnName = "assetId")
+    private AssetRegisterEntity assetId;
 
     @Column(name = "assigned_to_employee")
     private String assignedToEmployee;
@@ -31,7 +33,7 @@ public class SupportTicketsEntity {
     private Date expectedResolution;
 
     @Column(name = "ticket_status")
-    private Date ticketStatus;
+    private String  ticketStatus;
 
 
 }
