@@ -77,18 +77,21 @@ public class AssetServiceImplementation implements AssetRegisterService {
 
     @Override
     public ResponseSupportTicketDTO getByTicketId(Integer ticketId) {
-       Optional<SupportTicketsEntity> supportTicketsEntity  = supportTicketRepository.findById(ticketId);
-       if(supportTicketsEntity.isEmpty()){
-           throw new ApplicationException("Record not found for Id :"+ticketId,HttpStatus.BAD_REQUEST.value(),HttpStatus.BAD_REQUEST);
-       }
        ResponseSupportTicketDTO responseSupportTicketDTO = new ResponseSupportTicketDTO();
-        SupportTicketsEntity supportTicketsEntityOptional = supportTicketsEntity.get();
-
-       responseSupportTicketDTO.setTicketRaisedOn(supportTicketsEntityOptional.getTicketRaisedOn());
-       responseSupportTicketDTO.setTicketStatus(supportTicketsEntityOptional.getTicketStatus());
-       responseSupportTicketDTO.setTicketRaisedByEmployee(supportTicketsEntityOptional.getTicketRaisedByEmployee());
-       responseSupportTicketDTO.setExpectedResolution(supportTicketsEntityOptional.getExpectedResolution());
-       responseSupportTicketDTO.setAssetId(supportTicketsEntityOptional.getAssetId());
+       try {
+           Optional<SupportTicketsEntity> supportTicketsEntity = supportTicketRepository.findById(ticketId);
+           if (supportTicketsEntity.isEmpty()) {
+               throw new ApplicationException("Record not found for Id :" + ticketId, HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST);
+           }
+           SupportTicketsEntity supportTicketsEntityOptional = supportTicketsEntity.get();
+           responseSupportTicketDTO.setTicketRaisedOn(supportTicketsEntityOptional.getTicketRaisedOn());
+           responseSupportTicketDTO.setTicketStatus(supportTicketsEntityOptional.getTicketStatus());
+           responseSupportTicketDTO.setTicketRaisedByEmployee(supportTicketsEntityOptional.getTicketRaisedByEmployee());
+           responseSupportTicketDTO.setExpectedResolution(supportTicketsEntityOptional.getExpectedResolution());
+           responseSupportTicketDTO.setAssetId(supportTicketsEntityOptional.getAssetId());
+       } catch (Exception e){
+           throw new RuntimeException(e.getMessage());
+       }
        return responseSupportTicketDTO;
     }
 }
