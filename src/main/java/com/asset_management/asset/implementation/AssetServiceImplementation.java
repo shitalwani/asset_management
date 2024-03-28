@@ -1,15 +1,10 @@
 package com.asset_management.asset.implementation;
 
-import com.asset_management.asset.dto.RequestAssetRegisterDTO;
-import com.asset_management.asset.dto.RequestSupportTicketDTO;
-import com.asset_management.asset.dto.RequestTicketResolutionDTO;
-import com.asset_management.asset.dto.UpdateSupportTicketDTO;
-import com.asset_management.asset.entity.AssetRegisterEntity;
-import com.asset_management.asset.entity.ResponseSupportTicketDTO;
-import com.asset_management.asset.entity.SupportTicketsEntity;
-import com.asset_management.asset.entity.TicketResolutionEntity;
+import com.asset_management.asset.dto.*;
+import com.asset_management.asset.entity.*;
 import com.asset_management.asset.exception.ApplicationException;
 import com.asset_management.asset.repository.AssetRegisterRepository;
+import com.asset_management.asset.repository.AssetTypeRepository;
 import com.asset_management.asset.repository.SupportTicketRepository;
 import com.asset_management.asset.repository.TicketResolutionRepository;
 import com.asset_management.asset.service.AssetRegisterService;
@@ -17,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,6 +27,9 @@ public class AssetServiceImplementation implements AssetRegisterService {
 
     @Autowired
     TicketResolutionRepository ticketResolutionRepository;
+
+    @Autowired
+    AssetTypeRepository assetTypeRepository;
 
     @Override
     public AssetRegisterEntity storeAsset(RequestAssetRegisterDTO requestAssetRegisterDTO) {
@@ -110,5 +110,23 @@ public class AssetServiceImplementation implements AssetRegisterService {
             e.printStackTrace();
         }
         return supportTicketRepository.save(supportTicketsEntityOptional);
+    }
+
+    @Override
+    public List<AssetTypeEntity> addAssetTypes(List<RequestAssetTypeDTO> requestAssetTypeDTOList) {
+        List<AssetTypeEntity> assetTypeEntityList = new ArrayList<>();
+        try {
+            if (!requestAssetTypeDTOList.isEmpty()) {
+                requestAssetTypeDTOList.forEach(data -> {
+                    AssetTypeEntity assetTypeEntity = new AssetTypeEntity();
+                    assetTypeEntity.setAssetType(data.getAssetType());
+                    AssetTypeEntity assetTypeEntity1 = assetTypeRepository.save(assetTypeEntity);
+                    assetTypeEntityList.add(assetTypeEntity1);
+                });
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return assetTypeEntityList;
     }
 }
