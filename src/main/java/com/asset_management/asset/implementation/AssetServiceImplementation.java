@@ -3,6 +3,7 @@ package com.asset_management.asset.implementation;
 import com.asset_management.asset.dto.RequestAssetRegisterDTO;
 import com.asset_management.asset.dto.RequestSupportTicketDTO;
 import com.asset_management.asset.dto.RequestTicketResolutionDTO;
+import com.asset_management.asset.dto.UpdateSupportTicketDTO;
 import com.asset_management.asset.entity.AssetRegisterEntity;
 import com.asset_management.asset.entity.ResponseSupportTicketDTO;
 import com.asset_management.asset.entity.SupportTicketsEntity;
@@ -93,5 +94,21 @@ public class AssetServiceImplementation implements AssetRegisterService {
            throw new RuntimeException(e.getMessage());
        }
        return responseSupportTicketDTO;
+    }
+
+    @Override
+    public SupportTicketsEntity updateResolutionStatus(UpdateSupportTicketDTO updateSupportTicketDTO, Integer ticketId) {
+        Optional<SupportTicketsEntity> supportTicketsEntity = supportTicketRepository.findById(ticketId);
+        SupportTicketsEntity supportTicketsEntityOptional = supportTicketsEntity.get();
+        try {
+            if (supportTicketsEntity.isEmpty()) {
+                throw new ApplicationException("Record not found for Id:" + ticketId, HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST);
+            }
+            supportTicketsEntityOptional.setTicketStatus(updateSupportTicketDTO.getTicketStatus());
+            supportTicketsEntityOptional.setExpectedResolution(updateSupportTicketDTO.getExpectedResolution());
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return supportTicketRepository.save(supportTicketsEntityOptional);
     }
 }

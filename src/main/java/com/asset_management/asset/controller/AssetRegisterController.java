@@ -3,6 +3,7 @@ package com.asset_management.asset.controller;
 import com.asset_management.asset.dto.RequestAssetRegisterDTO;
 import com.asset_management.asset.dto.RequestSupportTicketDTO;
 import com.asset_management.asset.dto.RequestTicketResolutionDTO;
+import com.asset_management.asset.dto.UpdateSupportTicketDTO;
 import com.asset_management.asset.entity.AssetRegisterEntity;
 import com.asset_management.asset.entity.ResponseSupportTicketDTO;
 import com.asset_management.asset.entity.SupportTicketsEntity;
@@ -43,6 +44,12 @@ public class AssetRegisterController {
     public ResponseEntity<ResponseSupportTicketDTO> getSupportTicketById(@PathVariable(name = "ticketId")Integer ticketId){
         ResponseSupportTicketDTO getByTicketId = assetRegisterService.getByTicketId(ticketId);
         return new ResponseEntity<>(getByTicketId,HttpStatus.OK);
+    }
+
+    @PutMapping("/update/supportRequest/resolve/{ticketId}")
+    public ResponseEntity<SupportTicketsEntity> updateStatus(@RequestBody UpdateSupportTicketDTO updateSupportTicketDTO,@PathVariable(name = "ticketId") Integer ticketId){
+        SupportTicketsEntity updateStatus = assetRegisterService.updateResolutionStatus(updateSupportTicketDTO,ticketId);
+        return new ResponseEntity<SupportTicketsEntity>(updateStatus,HttpStatus.OK);
     }
 
 }
