@@ -3,7 +3,9 @@ package com.asset_management.asset.implementation;
 import com.asset_management.asset.dto.RequestAssetRegisterDTO;
 import com.asset_management.asset.dto.RequestSupportTicketDTO;
 import com.asset_management.asset.dto.RequestTicketResolutionDTO;
+import com.asset_management.asset.dto.UpdateSupportTicketDTO;
 import com.asset_management.asset.entity.AssetRegisterEntity;
+import com.asset_management.asset.entity.ResponseSupportTicketDTO;
 import com.asset_management.asset.entity.SupportTicketsEntity;
 import com.asset_management.asset.entity.TicketResolutionEntity;
 import com.asset_management.asset.exception.ApplicationException;
@@ -72,5 +74,41 @@ public class AssetServiceImplementation implements AssetRegisterService {
         ticketResolutionEntity.setResolutionDate(requestTicketResolutionDTO.getResolutionDate());
         ticketResolutionEntity.setResolutionDescription(requestTicketResolutionDTO.getResolutionDescription());
         return ticketResolutionRepository.save(ticketResolutionEntity);
+    }
+
+    @Override
+    public ResponseSupportTicketDTO getByTicketId(Integer ticketId) {
+       ResponseSupportTicketDTO responseSupportTicketDTO = new ResponseSupportTicketDTO();
+       try {
+           Optional<SupportTicketsEntity> supportTicketsEntity = supportTicketRepository.findById(ticketId);
+           if (supportTicketsEntity.isEmpty()) {
+               throw new ApplicationException("Record not found for Id :" + ticketId, HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST);
+           }
+           SupportTicketsEntity supportTicketsEntityOptional = supportTicketsEntity.get();
+           responseSupportTicketDTO.setTicketRaisedOn(supportTicketsEntityOptional.getTicketRaisedOn());
+           responseSupportTicketDTO.setTicketStatus(supportTicketsEntityOptional.getTicketStatus());
+           responseSupportTicketDTO.setTicketRaisedByEmployee(supportTicketsEntityOptional.getTicketRaisedByEmployee());
+           responseSupportTicketDTO.setExpectedResolution(supportTicketsEntityOptional.getExpectedResolution());
+           responseSupportTicketDTO.setAssetId(supportTicketsEntityOptional.getAssetId());
+       } catch (Exception e){
+           throw new RuntimeException(e.getMessage());
+       }
+       return responseSupportTicketDTO;
+    }
+
+    @Override
+    public SupportTicketsEntity updateResolutionStatus(UpdateSupportTicketDTO updateSupportTicketDTO, Integer ticketId) {
+        Optional<SupportTicketsEntity> supportTicketsEntity = supportTicketRepository.findById(ticketId);
+        SupportTicketsEntity supportTicketsEntityOptional = supportTicketsEntity.get();
+        try {
+            if (supportTicketsEntity.isEmpty()) {
+                throw new ApplicationException("Record not found for Id:" + ticketId, HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST);
+            }
+            supportTicketsEntityOptional.setTicketStatus(updateSupportTicketDTO.getTicketStatus());
+            supportTicketsEntityOptional.setExpectedResolution(updateSupportTicketDTO.getExpectedResolution());
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return supportTicketRepository.save(supportTicketsEntityOptional);
     }
 }
