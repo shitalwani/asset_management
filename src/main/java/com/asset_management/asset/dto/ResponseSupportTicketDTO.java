@@ -1,5 +1,6 @@
-package com.asset_management.asset.entity;
+package com.asset_management.asset.dto;
 
+import com.asset_management.asset.entity.AssetRegisterEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;

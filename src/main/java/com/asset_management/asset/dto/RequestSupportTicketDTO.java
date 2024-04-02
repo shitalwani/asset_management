@@ -14,7 +14,6 @@ public class RequestSupportTicketDTO {
     private String ticketRaisedByEmployee;
     private Integer assetId;
     private String assignedToEmployee;
-    private Date expectedResolution;
 
     @Enumerated(EnumType.STRING)
     private RequestStatusEnum.TICKET_STATUS ticketStatus;

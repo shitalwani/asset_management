@@ -8,14 +8,14 @@ import com.asset_management.asset.repository.AssetTypeRepository;
 import com.asset_management.asset.repository.SupportTicketRepository;
 import com.asset_management.asset.repository.TicketResolutionRepository;
 import com.asset_management.asset.service.AssetRegisterService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+@Slf4j
 @Service
 public class AssetServiceImplementation implements AssetRegisterService {
 
@@ -33,14 +33,21 @@ public class AssetServiceImplementation implements AssetRegisterService {
 
     @Override
     public AssetRegisterEntity storeAsset(RequestAssetRegisterDTO requestAssetRegisterDTO) {
+
+        Integer countOfAssets = assetRegisterRepository.getCountOfAssets(requestAssetRegisterDTO.getIssuedToEmployee());
+        if(countOfAssets >= 5){
+            throw new ApplicationException("Asset Not registered",HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST);
+        }
         AssetRegisterEntity assetRegisterEntity = new AssetRegisterEntity();
         assetRegisterEntity.setIssuedOn(requestAssetRegisterDTO.getIssuedOn());
         assetRegisterEntity.setAssetType(requestAssetRegisterDTO.getAssetType());
         assetRegisterEntity.setMake(requestAssetRegisterDTO.getMake());
         assetRegisterEntity.setIssuedToEmployee(requestAssetRegisterDTO.getIssuedToEmployee());
+
         assetRegisterEntity.setModelNumber(requestAssetRegisterDTO.getModelNumber());
         return assetRegisterRepository.save(assetRegisterEntity) ;
     }
+
 
     @Override
     public SupportTicketsEntity storeSupportTicket(RequestSupportTicketDTO requestSupportTicketDTO) {
@@ -49,14 +56,31 @@ public class AssetServiceImplementation implements AssetRegisterService {
         supportTicketsEntity.setTicketRaisedOn(requestSupportTicketDTO.getTicketRaisedOn());
         supportTicketsEntity.setTicketRaisedByEmployee(requestSupportTicketDTO.getTicketRaisedByEmployee());
         supportTicketsEntity.setAssignedToEmployee(requestSupportTicketDTO.getAssignedToEmployee());
-        supportTicketsEntity.setExpectedResolution(requestSupportTicketDTO.getExpectedResolution());
-
         Optional<AssetRegisterEntity> assetRegisterEntity = assetRegisterRepository.findById(requestSupportTicketDTO.getAssetId());
         if(assetRegisterEntity.isEmpty()){
             throw new ApplicationException("record not found ", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST);
         }
         supportTicketsEntity.setAssetId(assetRegisterEntity.get());
-
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date()); // Using today's date
+        if(assetRegisterEntity.get().getAssetType().equals("Laptop")){
+            c.add(Calendar.DATE,2); // Adding 2 days
+            Date laptopTime = c.getTime();
+            log.info("laptopTime :{}",laptopTime);
+            supportTicketsEntity.setExpectedResolution(laptopTime);
+        } else if (assetRegisterEntity.get().getAssetType().equals("Mobile")) {
+            c.add(Calendar.DATE,5);
+            Date mobileTime = c.getTime();
+            log.info("Mobile Time :{}",mobileTime);
+            supportTicketsEntity.setExpectedResolution(mobileTime);
+        }else if(assetRegisterEntity.get().getAssetType().equals("DataCard") || assetRegisterEntity.get().getAssetType().equals("HeadPhone") || assetRegisterEntity.get().getAssetType().equals("Storage")) {
+            c.add(Calendar.DATE, 3);
+            Date dataCardTime = c.getTime();
+            log.info("Mobile Time :{}", dataCardTime);
+            supportTicketsEntity.setExpectedResolution(dataCardTime);
+        }else {
+            throw new ApplicationException("Asset type not found",HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST);
+        }
         return supportTicketRepository.save(supportTicketsEntity);
     }
 
