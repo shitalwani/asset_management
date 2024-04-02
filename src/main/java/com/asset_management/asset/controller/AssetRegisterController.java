@@ -3,7 +3,6 @@ package com.asset_management.asset.controller;
 import com.asset_management.asset.dto.*;
 import com.asset_management.asset.entity.*;
 import com.asset_management.asset.service.AssetRegisterService;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
